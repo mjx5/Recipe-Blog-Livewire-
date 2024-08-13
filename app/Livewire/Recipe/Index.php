@@ -47,9 +47,7 @@ class Index extends Component
         }
     }
 
-    public function placeholder(){
-        return view('placeholder');
-    }
+    
     #[Computed]
     public function recipes()
     {
