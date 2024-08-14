@@ -6,6 +6,18 @@
     <title>{{ $title ?? 'Page Title' }}</title>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #140127; /* Dark blue color */
+            margin: 0; /* Remove default margin */
+        }
+        header {
+            margin-bottom: 0; /* Remove space below the header */
+        }
+        main {
+            margin-top: 0; /* Remove space above the main content */
+        }
+    </style>
 
 </head>
 <body>
@@ -16,7 +28,7 @@
 
     <main >
         {{ $slot }}
-        
+
     </main>
 
 

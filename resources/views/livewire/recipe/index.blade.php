@@ -1,4 +1,4 @@
-<div>
+<div style="background-color: 140127; min-height: 100vh; color: rgb(0, 0, 0);">
     <!-- Recipe Cards Section -->
     <div class="flex flex-col md:flex-row justify-between mt-10">
         <div class="w-full md:w-8/12">
