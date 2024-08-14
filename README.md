@@ -5,7 +5,7 @@ This project is a Recipe Blog built using Laravel and Livewire, featuring full C
 **To test the project:**
 
 - **Login Credentials:**
-  - **Email:** `test123@gmail.com`
+  - **Email:** `fakeuser123@gmail.com`
   - **Password:** `1234567890`
 
 - **Or** register as a new user to explore the features.
