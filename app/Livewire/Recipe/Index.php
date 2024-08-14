@@ -3,8 +3,10 @@
 namespace App\Livewire\Recipe;
 
 use App\Models\Recipe;
-use Livewire\WithPagination;
 use Livewire\Component;
+use Livewire\WithPagination;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Index extends Component
 {
@@ -38,16 +40,24 @@ class Index extends Component
     }
 
     public function deleteRecipe($recipeId)
-    {
-        try {
-            Recipe::findOrFail($recipeId)->delete();
-        } catch (\Exception $e) {
-            session()->flash('delete_error', 'Failed to delete Recipe');
-            return;
-        }
-    }
+{
+    DB::beginTransaction();
+    try {
+        // Attempt to find and delete the recipe
+        $recipe = Recipe::findOrFail($recipeId);
+        $recipe->delete();
+        DB::commit();
+        session()->flash('delete_message', 'Recipe deleted successfully.');
 
-    
+    } catch (\Exception $e) {
+        DB::rollback();
+        Log::error('Failed to delete Recipe: ' . $e->getMessage());
+        session()->flash('delete_error', 'Recipe no longer exists.');
+    }
+    return redirect()->route('index');
+}
+
+
     #[Computed]
     public function recipes()
     {

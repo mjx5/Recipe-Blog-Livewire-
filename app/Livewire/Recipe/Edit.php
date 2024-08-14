@@ -5,6 +5,8 @@ namespace App\Livewire\Recipe;
 use App\Models\Recipe;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class Edit extends Component
 {
@@ -26,32 +28,45 @@ class Edit extends Component
          // Load existing image path if needed
     }
 
-    public function updateRecipe()
-    {
+
+
+public function updateRecipe()
+{
+    DB::beginTransaction();
+
+    try {
         $this->validate([
             'name' => 'required|string|max:255',
             'ingredients' => 'required|string',
             'description' => 'required|string',
-            'image' => 'nullable|image|max:2048', // 1MB Max
+            'image' => 'nullable|image|max:2048', // 2MB Max
         ]);
-
 
         if ($this->image) {
             $imagePath = $this->image->store('recipes', 'public');
         }
 
+        // Attempt to find and update the recipe
         $recipe = Recipe::findOrFail($this->recipeId);
         $recipe->update([
             'name' => $this->name,
             'ingredients' => $this->ingredients,
             'description' => $this->description,
-            'image_path' => $imagePath  // Update or keep the old image path
+            'image_path' => $this->image ? $imagePath : $recipe->image_path
         ]);
+        DB::commit();
 
         session()->flash('message', 'Recipe updated successfully.');
-
         return redirect()->route('index');
+
+    } catch (ModelNotFoundException $e) {
+        DB::rollback();
+        // Store specific error message in session
+        session()->flash('update_error', 'The recipe you are trying to update does not exist.');
+        return redirect()->route('index');
+
     }
+}
 
     public function cancel(){
         $this->reset('name','ingredients','description','image');

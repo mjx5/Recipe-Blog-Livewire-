@@ -3,18 +3,15 @@
     <div class="flex flex-col md:flex-row justify-between mt-10">
         <div class="w-full md:w-8/12">
             <!-- Display Delete Error if it exists -->
-            @if (session()->has('delete_error'))
-                <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-                    <span class="font-medium">Error!</span> {{ session('delete_error') }}
-                </div>
-            @endif
-
+            @include('livewire.includes.session-messages')
             <!-- Search bar with Filter -->
             @include('livewire.includes.search-bar')
         </div>
 
         <!-- Create Recipe Button -->
-        @include('livewire.includes.create-button')
+        <div class="md:w-4/12 flex items-center justify-center">
+            @include('livewire.includes.create-button')
+        </div>
     </div>
 
     <!-- Check if there are recipes to display -->

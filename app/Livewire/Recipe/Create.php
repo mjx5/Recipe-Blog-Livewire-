@@ -5,6 +5,8 @@ namespace App\Livewire\Recipe;
 use App\Models\Recipe;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class Create extends Component
 {
@@ -24,24 +26,49 @@ class Create extends Component
 
     public function createRecipe()
     {
-
-        
+        // Validate input
         $this->validate();
 
-        // Handle image upload
-        $imagePath = $this->image->store('recipes', 'public');
+        // Start a transaction
+        DB::beginTransaction();
 
-        Recipe::create([
-            'name' => $this->recipeName,
-            'description' => $this->description,
-            'ingredients' => $this->ingredients,
-            'image_path' => $imagePath, // Save the path to the image
-            'user_id' => auth()->user()->id,
-        ]);
+        try {
+            // Handle image upload
+            $imagePath = $this->image->store('recipes', 'public');
 
-        $this->reset('recipeName', 'description', 'ingredients', 'image');
-        session()->flash('recipe_created', 'Recipe Created');
-        return redirect()->to('/recipes');
+            // Create the recipe
+            Recipe::create([
+                'name' => $this->recipeName,
+                'description' => $this->description,
+                'ingredients' => $this->ingredients,
+                'image_path' => $imagePath, // Save the path to the image
+                'user_id' => auth()->user()->id,
+            ]);
+
+            // Commit the transaction
+            DB::commit();
+
+            // Reset the form and flash a success message
+            $this->reset('recipeName', 'description', 'ingredients', 'image');
+            session()->flash('recipe_created', 'Recipe created successfully.');
+            return redirect()->to('/recipes');
+
+        } catch (ValidationException $e) {
+            // Rollback the transaction if validation fails
+            DB::rollback();
+
+            // Handle validation exceptions
+            session()->flash('recipe_error', 'Validation failed: ' . $e->getMessage());
+            return;
+
+        } catch (\Exception $e) {
+            // Rollback the transaction for any other exceptions
+            DB::rollback();
+
+            // Handle general exceptions
+            session()->flash('recipe_error', 'Failed to create recipe: ' . $e->getMessage());
+            return;
+        }
     }
 
     public function render()
