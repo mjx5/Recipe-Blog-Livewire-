@@ -14,8 +14,8 @@
                 Uploading image, please wait...
             </div>
 
-            @if (session()->has('recipe_created'))
-                <span class="text-green-600 text-sm">{{ session('recipe_created') }}</span>
+            @if (session()->has('recipe_error'))
+                <span class="text-green-600 text-sm">{{ session('recipe_error') }}</span>
             @endif
         </form>
     </div>
