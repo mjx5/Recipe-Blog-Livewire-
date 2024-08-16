@@ -64,7 +64,11 @@
                     Cancel
                 </button>
             </div>
-
+            @if (session()->has('update_error_lock'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">{{ session('update_error_lock') }}</strong>
+                </div>
+            @endif
             </div>
         </form>
     </div>

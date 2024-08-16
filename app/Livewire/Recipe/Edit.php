@@ -34,10 +34,11 @@ class Edit extends Component
         $lockKey = 'recipe-update-' . auth()->user()->id;
         $lock = Cache::lock($lockKey, 10);
 
-        DB::beginTransaction();
+
 
         try {
             if ($lock->get()) {
+                DB::beginTransaction();
                 $this->validate([
                     'name' => 'required|string|max:255',
                     'ingredients' => 'required|string',
@@ -66,19 +67,18 @@ class Edit extends Component
 
                 session()->flash('update_error', 'The recipe is currently being updated by someone else. Please try again later.');
                 DB::rollback();
+                $lock->release();
                 return redirect()->route('index');
             }
         } catch (ModelNotFoundException $e) {
             DB::rollback();
             session()->flash('update_error', 'The recipe you are trying to update does not exist.');
+
             return redirect()->route('index');
         } catch (\Exception $e) {
             DB::rollback();
             session()->flash('update_error', 'An error occurred: ' . $e->getMessage());
             return redirect()->route('index');
-        } finally {
-            // Always release the lock
-            $lock->release();
         }
     }
 

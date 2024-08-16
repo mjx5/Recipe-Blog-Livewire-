@@ -14,9 +14,6 @@
                 Uploading image, please wait...
             </div>
 
-            @if (session()->has('recipe_error'))
-                <span class="text-green-600 text-sm">{{ session('recipe_error') }}</span>
-            @endif
         </form>
     </div>
 </div>

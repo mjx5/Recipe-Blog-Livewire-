@@ -33,9 +33,14 @@
                             <span class="text-green-500 text-sm">{{ session('message') }}</span>
                         @endif
 
-                        @if (session()->has('error'))
-                            <span class="text-red-500 text-sm">{{ session('error') }}</span>
+                        @if (session()->has('request_error'))
+                            <span class="text-red-500 text-sm">{{ session('request_error') }}</span>
                         @endif
+                        @if (session()->has('error'))
+                        <span class="text-red-500 text-sm">{{ session('error') }}</span>
+                        @endif
+
+
                     </form>
                 </div>
             </div>

@@ -29,13 +29,9 @@ class Create extends Component
     {
         $lockKey = 'recipe-create-' . auth()->user()->id; // Unique key for the current user
         $lock = Cache::lock($lockKey, 30); // Lock expires after 30 seconds
-
-        // Start a transaction
-        DB::beginTransaction();
-
         try {
-            if ($lock->get()) { // Try to acquire the lock
-
+            if ($lock->get()) {
+                DB::beginTransaction();
                 $this->validate();
                 $imagePath = $this->image->store('recipes', 'public');
 
@@ -58,7 +54,9 @@ class Create extends Component
             } else {
                 session()->flash('recipe_error', 'A recipe creation request is already in progress. Please try again later.');
                 DB::rollback();
-                return;
+                $lock->release();
+                return redirect()->route('index');
+
             }
         } catch (ValidationException $e) {
             // Rollback the transaction if validation fails
@@ -67,16 +65,6 @@ class Create extends Component
             // Handle validation exceptions
             session()->flash('recipe_error', 'Validation failed: ' . $e->getMessage());
             return;
-        } catch (\Exception $e) {
-            // Rollback the transaction for any other exceptions
-            DB::rollback();
-
-            // Handle general exceptions
-            session()->flash('recipe_error', 'Failed to create recipe: ' . $e->getMessage());
-            return;
-        } finally {
-            // Always release the lock
-            $lock->release();
         }
     }
 

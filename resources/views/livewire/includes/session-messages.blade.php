@@ -22,11 +22,21 @@
         <span class="font-medium">Success!</span> {{ session('delete_message') }}
     </div>
 @endif
+@if (session()->has('recipe_error'))
+    <div id="recipeError" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+        <span class="font-medium">Success!</span> {{ session('recipe_error') }}
+    </div>
+@endif
 
+@if (session()->has('message'))
+    <div id="message" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+        <span class="font-medium">Success!</span> {{ session('message') }}
+    </div>
+@endif
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         setTimeout(function() {
-            let alerts = document.querySelectorAll('#updateError, #logoutError, #deleteError, #deleteMessage');
+            let alerts = document.querySelectorAll('#updateError, #logoutError, #deleteError, #deleteMessage, #recipeError,#message');
             alerts.forEach(function(alert) {
                 alert.style.transition = 'opacity 0.5s ease';
                 alert.style.opacity = '0';

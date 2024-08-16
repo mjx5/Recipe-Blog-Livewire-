@@ -21,13 +21,13 @@ class Login extends Component
     public function login()
     {
         $lockKey = 'user-login-' . $this->email; // Unique key based on the email
-        $lock = Cache::lock($lockKey, 30); // Lock expires after 10 seconds
+        $lock = Cache::lock($lockKey, 10); // Lock expires after 10 seconds
 
-        // Start the transaction
-        DB::beginTransaction();
+
 
         try {
             if ($lock->get()) { // Try to acquire the lock
+                DB::beginTransaction();
                 $this->validate();
 
                 $credentials = [
@@ -47,13 +47,11 @@ class Login extends Component
                 // If the lock is not acquired
                 session()->flash('error', 'Login request is being processed. Please try again later.');
                 DB::rollBack();
+                $lock->release();
             }
         } catch (Exception $e) {
             DB::rollBack();
             session()->flash('error', 'Something went wrong. Please try again later.');
-        } finally {
-            // Always release the lock
-            $lock->release();
         }
     }
 
